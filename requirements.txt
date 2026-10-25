@@ -1,4 +1,7 @@
-discord.py>=2.4,<3
+discord.py[voice]>=2.7.1,<2.8
 openai>=2.0,<3
 python-dotenv>=1.0,<2
 tzdata>=2025.1
+google-genai>=1.67,<2
+audioop-lts>=0.2.2; python_version >= '3.13'
+discord-ext-voice-recv-dave @ git+https://github.com/jstewart0788/discord-ext-voice-recv-dave.git@78fcb434a3484f2abf54cf89e80e86b651e5c28d

@@ -451,7 +451,14 @@ async def enviar_espontaneo(canal, canal_id, conteo):
 async def main():
     try:
         async with enrutador, bot:
-            await bot.start(TOKEN)
+            # Importación diferida: las pruebas y el chat escrito no cargan audio.
+            from voice_chat import VoiceCog
+            voz = VoiceCog(bot, personalidad, contexto, guardar_mensaje)
+            await bot.add_cog(voz)
+            try:
+                await bot.start(TOKEN)
+            finally:
+                await voz.close()
     except discord.LoginFailure:
         raise SystemExit("DISCORD_TOKEN inválido. Copia el token de Bot en el Developer Portal.")
     except discord.PrivilegedIntentsRequired:

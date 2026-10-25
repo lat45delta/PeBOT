@@ -163,6 +163,74 @@ Si faltan claves, el programa lo indica antes de conectarse. Los fallos del
 modelo devuelven un aviso breve; comprueba saldo, modelo, conexión y claves.
 Los modelos se pueden cambiar con `OPENAI_MODEL`, `DEEPSEEK_MODEL` y `GOOGLE_MODEL`.
 
+## Conversación por voz
+
+Entra a un canal de voz normal y escribe `!entrar` en un canal de texto donde
+PeBOT atienda comandos. Puedes hablar sin mencionar su nombre en cada turno.
+`!salir` desconecta y `!callar` corta su respuesta actual sin dejar de escuchar.
+Los alias `!join` y `!leave` también funcionan. Solo los participantes de ese
+canal o quienes tengan **Administrar servidor** pueden usar salir/callar.
+
+El bot necesita permisos **Ver canal**, **Conectar** y **Hablar** en el canal de voz.
+No necesita Presence Intent ni Server Members Intent. Se admite una sesión por
+servidor; para cambiar de canal, sal primero. Si configuras `CHANNEL_IDS`, los
+comandos de voz también deben enviarse desde uno de esos canales de texto.
+`VOICE_CHANNEL_IDS` limita por separado a qué canales de voz puede entrar.
+
+```dotenv
+GOOGLE_VOICE_API_KEY=
+GOOGLE_VOICE_MODEL=gemini-3.8-live
+GOOGLE_VOICE_NAME=Puck
+VOICE_CHANNEL_IDS=
+VOICE_MAX_SESSION_MINUTES=15
+VOICE_EMPTY_TIMEOUT_SECONDS=60
+VOICE_VOLUME=0.8
+VOICE_SAVE_TRANSCRIPTS=false
+```
+
+La clave de voz vacía reutiliza `GOOGLE_API_KEY` o `GEMINI_API_KEY`. La sesión usa
+**Gemini Live**, con su disponibilidad y facturación de audio, independientemente
+del Flash-Lite y de los respaldos del chat escrito. No cambia a DeepSeek u OpenAI
+durante una llamada: si falla la sesión Live, desconecta y avisa. Después puedes
+usar `!entrar` para volver a conectar. Modelo y voz se eligen con las variables
+anteriores; `Puck` es la voz predeterminada.
+
+Conserva la personalidad peruana. Usa contexto y recuerdos del **canal de voz**,
+separados de los de cada canal de texto. Envía el audio recibido a Google solo
+mientras está conectado; al entrar publica un aviso en el canal de comandos.
+No escribe archivos de audio. `VOICE_SAVE_TRANSCRIPTS=true` guarda las
+transcripciones en `mensajes` con el ID del canal de voz; al mezclar varias voces
+se identifican como `voz (grupo)`, sin atribuirlas a una persona concreta.
+Por defecto las transcripciones solo están en la sesión y no se guardan en SQLite.
+
+Escucha las voces humanas del canal, mezcla el audio de quienes hablan a la vez
+y utiliza la detección de actividad de Gemini para responder cuando termina un
+turno. Si alguien interrumpe, corta el audio que estaba reproduciendo. Las voces
+de otros bots se descartan para evitar bucles. Para mejores resultados, empieza
+con una conversación individual y usa auriculares para evitar eco del micrófono.
+
+Se desconecta a los 15 minutos o tras 60 segundos sin personas en el canal,
+según las variables anteriores. No entra automáticamente a ningún canal.
+
+### Instalación de voz y alojamiento
+
+Vuelve a instalar `requirements.txt` después de actualizar el repositorio.
+Necesitas **Git** para instalar la extensión de recepción fijada a un commit.
+En Windows, discord.py incluye la biblioteca Opus. En Debian/Ubuntu, instala
+`libopus0` (por ejemplo, `apt-get install libopus0 git`). No necesita FFmpeg:
+la conversión entre PCM de Discord y Gemini ocurre en memoria.
+El host debe permitir conexiones salientes UDP a Discord y WebSocket a Google;
+una conexión de texto funcionando no confirma por sí sola la conectividad de voz.
+
+La recepción utiliza el fork `discord-ext-voice-recv-dave` compatible con el
+cifrado DAVE de Discord. Está fijado a un commit para evitar cambios inesperados.
+Depende de APIs internas de discord.py, por eso se limita a la rama 2.7 y debe
+probarse al actualizar. No instales simultáneamente la extensión upstream con
+el mismo namespace `discord.ext.voice_recv`.
+
+Fuentes: [Gemini Live](https://ai.google.dev/gemini-api/docs/live-api/get-started-sdk)
+y [extensión DAVE](https://github.com/jstewart0788/discord-ext-voice-recv-dave).
+
 ## Pruebas locales
 
 ```powershell
