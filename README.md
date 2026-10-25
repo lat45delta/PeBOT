@@ -10,7 +10,7 @@ de la API en tu cuenta. La ejecución usa la API de OpenAI, no una sesión de ch
 ## Iniciar en Windows (Python 3.11 o posterior)
 
 ```powershell
-cd C:\Users\Alejandro\Documents\Github\PeBOT\PeBOT
+cd \PeBOT\PeBOT
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 notepad .env
