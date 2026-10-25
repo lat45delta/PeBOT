@@ -197,7 +197,7 @@ anteriores; `Puck` es la voz predeterminada.
 
 Conserva la personalidad peruana. Usa contexto y recuerdos del **canal de voz**,
 separados de los de cada canal de texto. Envía el audio recibido a Google solo
-mientras está conectado; al entrar publica un aviso en el canal de comandos.
+mientras está conectado. Al entrar se conecta en silencio, sin mensajes de confirmación en el chat.
 No escribe archivos de audio. `VOICE_SAVE_TRANSCRIPTS=true` guarda las
 transcripciones en `mensajes` con el ID del canal de voz; al mezclar varias voces
 se identifican como `voz (grupo)`, sin atribuirlas a una persona concreta.

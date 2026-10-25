@@ -231,7 +231,7 @@ class VoiceTests(unittest.IsolatedAsyncioTestCase):
         return SimpleNamespace(guild=guild, author=SimpleNamespace(voice=SimpleNamespace(channel=channel)),
                                channel=SimpleNamespace(id=3), send=AsyncMock())
 
-    async def test_join_announces_audio_use_and_creates_one_session(self):
+    async def test_join_is_silent_and_creates_one_session(self):
         cog = VoiceCog(MagicMock(), MagicMock(return_value='PeBOT peruano'),
                        MagicMock(return_value='historial'), MagicMock())
         ctx = self.context()
@@ -240,9 +240,11 @@ class VoiceTests(unittest.IsolatedAsyncioTestCase):
         with patch.dict(os.environ, {'GOOGLE_VOICE_API_KEY': 'fake-key', 'VOICE_CHANNEL_IDS': ''}), \
              patch('voice_chat.VoiceSession', return_value=session):
             await cog.enter_voice.callback(cog, ctx)
+            ctx.send.assert_not_awaited()
             await cog.enter_voice.callback(cog, ctx)
         session.start.assert_awaited_once()
-        self.assertIn('Google', ctx.send.call_args_list[0].args[0])
+        ctx.send.assert_awaited_once()
+        self.assertIn('Ya estoy en voz', ctx.send.call_args.args[0])
         self.assertIs(cog.sessions[2], session)
 
     async def test_join_requires_google_key_and_voice_permissions(self):

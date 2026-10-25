@@ -274,7 +274,7 @@ class VoiceSession:
                     await client.aio.aclose()
 
     def _input_failed(self):
-        self.reason = 'Se interrumpió la recepción de audio de Discord. Usa !entrar para reconectar.'
+        self.reason = 'Ya fue'
         if self.task and not self.task.done():
             self.task.cancel()
 
@@ -335,15 +335,12 @@ class VoiceCog(commands.Cog):
                 session = VoiceSession(channel, ctx.channel, key, model, config, self.save_message)
                 self.sessions[ctx.guild.id] = session
                 try:
-                    await ctx.send('voy entrando a voz. el audio de ese canal se enviará a Google para conversar; '
-                                   'no guardo archivos de audio. usa !salir para terminar')
                     await session.start()
                 except BaseException:
                     self.sessions.pop(ctx.guild.id, None)
                     await session.stop()
                     raise
                 session.task.add_done_callback(lambda _: asyncio.create_task(self._finished(ctx.guild.id, session)))
-                await ctx.send('ya estoy, hablen nomas 🎙️')
             except (VoiceError, ValueError) as error:
                 await ctx.send(str(error))
 
